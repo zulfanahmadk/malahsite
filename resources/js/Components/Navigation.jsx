@@ -33,7 +33,7 @@ export default function Navigation({ user }) {
           {/* Nav Items - Center */}
           <div className="flex items-center gap-8 flex-1 justify-center">
             <button
-              onClick={() => scrollToSection('home')}
+              href="/"
               className="text-gray-700 hover:text-purple-600 transition"
             >
               Home
