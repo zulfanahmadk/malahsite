@@ -103,15 +103,52 @@ mysql -u malah_user -p -D malah_project -e "SHOW TABLES;"
 
 # Should output tables like:
 # users
-# templates
-# subscriptions
-# transactions
-# invitation_data
+# app_config                    # Application configuration
+# templates                     # Invitation templates
+# subscriptions                 # User subscriptions
+# transactions                  # Payment transactions
+# invitation_data              # Invitation content
 # password_reset_tokens
 # sessions
 # cache
 # cache_locks
 # jobs
+```
+
+### 6. Understanding the app_config Table
+
+The `app_config` table stores application-wide settings in the database instead of using static config files. This allows dynamic configuration changes without code deployment.
+
+**Structure:**
+```sql
+CREATE TABLE app_config (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  key VARCHAR(255) UNIQUE NOT NULL,        -- Configuration key name
+  value LONGTEXT,                          -- Configuration value
+  type VARCHAR(50) DEFAULT 'string',       -- Type: string, boolean, json
+  description VARCHAR(255),                -- Human-readable description
+  created_at TIMESTAMP,
+  updated_at TIMESTAMP
+);
+```
+
+**Default Seeded Values:**
+```sql
+SELECT * FROM app_config;
+```
+
+This table is automatically populated when you run `php artisan migrate --seed`
+
+**Updating Configuration:**
+```sql
+-- Update logo URL
+UPDATE app_config SET value = 'https://example.com/logo.png' WHERE key = 'logo_url';
+
+-- Update primary color
+UPDATE app_config SET value = '#FF6B6B' WHERE key = 'primary_color';
+
+-- Update contact email
+UPDATE app_config SET value = 'support@example.com' WHERE key = 'contact_email';
 ```
 
 ## Common Issues
@@ -161,6 +198,56 @@ mysql -u malah_user -p -D malah_project -e "SHOW TABLES;"
 ```bash
 mysql -u root -p -e "CREATE DATABASE malah_project;"
 ```
+
+## Managing Application Configuration
+
+### Using ConfigService in Laravel
+
+The application provides a ConfigService class to easily manage configuration in code:
+
+```php
+use App\Services\ConfigService;
+
+// Get configuration value
+$logoUrl = ConfigService::get('logo_url');
+$primaryColor = ConfigService::get('primary_color', '#9333ea'); // with default
+
+// Set configuration value
+ConfigService::set('logo_url', 'https://example.com/logo.png', 'string', 'Company logo');
+ConfigService::set('is_maintenance', true, 'boolean', 'Maintenance mode');
+
+// Get all configuration
+$allConfig = ConfigService::all();
+
+// Get specific grouped config
+$branding = ConfigService::getBranding();
+$appSettings = ConfigService::getAppSettings();
+```
+
+### Configuration Keys Reference
+
+**Logo & Branding**
+- `logo_url` - Logo image URL
+- `logo_text` - Fallback logo text
+- `logo_height` - Logo height CSS value
+
+**Colors**
+- `primary_color` - Primary brand color
+- `secondary_color` - Secondary brand color
+
+**Contact Information**
+- `contact_email` - Support/contact email
+- `contact_phone` - WhatsApp/phone number
+- `contact_address` - Physical address
+
+**Social Media**
+- `social_facebook` - Facebook profile URL
+- `social_instagram` - Instagram profile URL
+- `social_twitter` - Twitter profile URL
+
+**Application**
+- `app_name` - Application display name
+- `app_description` - Application description
 
 ## Development Tools
 

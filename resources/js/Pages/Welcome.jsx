@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react'
 import { Link, usePage } from '@inertiajs/react'
 
 export default function Welcome() {
-  const { templates: initialTemplates = [] } = usePage().props
+  const { templates: initialTemplates = [], branding } = usePage().props
   const [selectedCategory, setSelectedCategory] = useState(null)
   const [filteredTemplates, setFilteredTemplates] = useState(initialTemplates)
+  const [expandedFaqId, setExpandedFaqId] = useState(null)
 
   useEffect(() => {
     if (selectedCategory) {
@@ -16,10 +17,38 @@ export default function Welcome() {
     }
   }, [selectedCategory, initialTemplates])
 
+  const faqItems = [
+    {
+      id: 1,
+      question: 'Bagaimana cara membuat undangan digital?',
+      answer: 'Anda cukup mendaftar akun, memilih template yang diinginkan, kemudian mengisi data acara Anda. Setelah itu, undangan siap dibagikan kepada tamu melalui link atau QR code.'
+    },
+    {
+      id: 2,
+      question: 'Apakah saya bisa mengedit template setelah membelinya?',
+      answer: 'Ya, tentu saja. Semua template dapat diedit sepenuhnya. Anda bisa mengubah warna, teks, foto, dan elemen lainnya sesuai keinginan Anda.'
+    },
+    {
+      id: 3,
+      question: 'Berapa lama waktu yang dibutuhkan untuk membuat undangan?',
+      answer: 'Proses pembuatan sangat cepat, biasanya hanya membutuhkan waktu 15-30 menit tergantung dari jumlah perubahan yang ingin Anda lakukan.'
+    },
+    {
+      id: 4,
+      question: 'Apakah template bisa digunakan untuk acara lain?',
+      answer: 'Template undangan pernikahan dirancang khusus untuk pernikahan. Namun, Anda dapat mengeditnya untuk disesuaikan dengan acara lainnya jika diperlukan.'
+    },
+    {
+      id: 5,
+      question: 'Bagaimana cara tamu merespon undangan?',
+      answer: 'Tamu dapat merespon melalui fitur RSVP yang ada di undangan digital. Respons mereka akan tercatat otomatis di dashboard Anda untuk memudahkan pencatatan.'
+    }
+  ]
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50">
+    <div className="bg-gradient-to-br from-purple-50 to-pink-50">
       {/* Hero Section */}
-      <section className="py-20 px-4 text-center pt-32">
+      <section id="home" className="py-20 px-4 text-center pt-32">
         <h1 className="text-5xl font-bold text-gray-900 mb-4">
           Buat Undangan Digital Pernikahan Impianmu
         </h1>
@@ -121,6 +150,48 @@ export default function Welcome() {
           )}
         </div>
       </section>
+
+      {/* FAQ Section */}
+      <section id="faq" className="py-16 px-4 bg-white">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-4xl font-bold text-center mb-12 text-gray-900">
+            Pertanyaan yang Sering Diajukan
+          </h2>
+          <div className="space-y-4">
+            {faqItems.map((item) => (
+              <div
+                key={item.id}
+                className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition"
+              >
+                <button
+                  onClick={() => setExpandedFaqId(expandedFaqId === item.id ? null : item.id)}
+                  className="w-full px-6 py-4 flex justify-between items-center hover:bg-gray-50 transition"
+                >
+                  <h3 className="text-lg font-semibold text-gray-900 text-left">
+                    {item.question}
+                  </h3>
+                  <svg
+                    className={`w-6 h-6 text-purple-600 transition-transform ${
+                      expandedFaqId === item.id ? 'transform rotate-180' : ''
+                    }`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                  </svg>
+                </button>
+                {expandedFaqId === item.id && (
+                  <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
+                    <p className="text-gray-700">{item.answer}</p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
     </div>
   )
 }

@@ -33,9 +33,14 @@ export default function Login() {
         return
       }
 
-      // Store token and redirect
+      // Store token and redirect based on user type
       localStorage.setItem('auth_token', result.token)
-      window.location.href = '/dashboard'
+
+      if (result.user.user_type === 'admin') {
+        window.location.href = '/admin/dashboard'
+      } else {
+        window.location.href = '/dashboard'
+      }
     } catch (err) {
       setError('An error occurred. Please try again.')
       setLoading(false)

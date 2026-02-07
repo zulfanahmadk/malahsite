@@ -1,3 +1,4 @@
+import React from 'react'
 import { createRoot } from 'react-dom/client'
 import { createInertiaApp } from '@inertiajs/react'
 import Layout from './Layouts/Layout'
@@ -9,7 +10,21 @@ createInertiaApp({
 
     if (!page) {
       console.error(`Page not found: ${name}`)
-      throw new Error(`Page not found: ${name}`)
+      // Return a fallback page instead of throwing error
+      const NotFound = () => (
+        <Layout>
+          <div className="min-h-screen flex items-center justify-center">
+            <div className="text-center">
+              <h1 className="text-4xl font-bold text-gray-900 mb-4">404</h1>
+              <p className="text-xl text-gray-600 mb-8">Halaman tidak ditemukan</p>
+              <a href="/" className="inline-block bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700">
+                Kembali ke Beranda
+              </a>
+            </div>
+          </div>
+        </Layout>
+      )
+      return { default: NotFound, layout: page => <Layout>{page}</Layout> }
     }
 
     page.default.layout = page.default.layout || (page => <Layout children={page} />)

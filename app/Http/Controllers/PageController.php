@@ -10,8 +10,9 @@ class PageController extends Controller
 {
     public function welcome()
     {
+        $templates = Template::where('is_active', true)->get();
         return Inertia::render('Welcome', [
-            'templates' => [],
+            'templates' => $templates,
         ]);
     }
 

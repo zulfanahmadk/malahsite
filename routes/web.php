@@ -29,13 +29,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
 // Wildcard subdomain routing for invitations
 Route::domain('{subdomain}.malahproject.test')->group(function () {
-    Route::get('/', [SubdomainController::class, 'show'])->name('invitation');
+    Route::get('/', [SubdomainController::class, 'show'])->name('invitation.test');
 });
 
 Route::domain('{subdomain}.malahproject.com')->group(function () {
-    Route::get('/', [SubdomainController::class, 'show'])->name('invitation');
+    Route::get('/', [SubdomainController::class, 'show'])->name('invitation.com');
 });
 
 Route::domain('{subdomain}.malahproject.local')->group(function () {
-    Route::get('/', [SubdomainController::class, 'show'])->name('invitation');
+    Route::get('/', [SubdomainController::class, 'show'])->name('invitation.local');
 });

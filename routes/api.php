@@ -68,5 +68,5 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 });
 
-// ====== WEBHOOK ROUTES (should be protected with signature verification) ======
-Route::post('/webhooks/midtrans', [TransactionController::class, 'webhook']);
+// ====== WEBHOOK ROUTES (protected with Midtrans signature verification) ======
+Route::post('/webhooks/midtrans', [PaymentController::class, 'webhook']);

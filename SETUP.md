@@ -151,13 +151,28 @@ DB_PASSWORD=your_password_here
 # Run migrations
 php artisan migrate
 
-# Seed sample data (templates and admin users)
-php artisan db:seed --class=TemplateSeeder
-php artisan db:seed --class=AdminUserSeeder
+# Seed all data (templates, admin users, and app configuration)
+php artisan db:seed
 
-# Or seed everything at once
+# Or seed everything at once (fresh database)
 php artisan migrate:fresh --seed
 ```
+
+**Database Configuration Management**:
+
+The application uses a database-driven configuration system via the `app_config` table. This allows you to manage application settings directly from the database without editing config files.
+
+**Default configurations seeded**:
+- Logo and branding settings
+- Primary and secondary colors
+- Contact information (email, phone, address)
+- Social media links
+- Application name and description
+
+You can manage these via:
+1. **Database**: Update `app_config` table directly using SQL or MySQL client
+2. **ConfigService**: Use `App\Services\ConfigService` in code
+3. **Admin Panel** (when implemented): UI-based configuration management
 
 ### 4. Midtrans Configuration
 
@@ -186,6 +201,95 @@ npm run dev
 ```
 
 The application will be available at `http://localhost:8000`
+
+## Database Configuration System
+
+The application uses a database-driven configuration system through the `AppConfig` model. This is more flexible than file-based config and allows for dynamic updates.
+
+### AppConfig Table Structure
+
+```sql
+CREATE TABLE app_config (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  key VARCHAR(255) UNIQUE NOT NULL,
+  value LONGTEXT,
+  type VARCHAR(50) DEFAULT 'string', -- string, boolean, json
+  description VARCHAR(255),
+  created_at TIMESTAMP,
+  updated_at TIMESTAMP
+)
+```
+
+### Using ConfigService in Code
+
+```php
+use App\Services\ConfigService;
+
+// Get single config value
+$logoUrl = ConfigService::get('logo_url');
+$primaryColor = ConfigService::get('primary_color', '#9333ea'); // with default
+
+// Set config value
+ConfigService::set('logo_url', 'https://example.com/logo.png', 'string', 'Logo URL');
+ConfigService::set('is_maintenance', true, 'boolean', 'Maintenance mode');
+ConfigService::set('menu_items', ['home', 'about', 'contact'], 'json', 'Menu items');
+
+// Get all config
+$allConfig = ConfigService::all();
+
+// Get grouped branding config
+$branding = ConfigService::getBranding();
+
+// Get app settings
+$appSettings = ConfigService::getAppSettings();
+```
+
+### Accessing Config in Views/Controllers
+
+```php
+// In controllers
+use App\Models\AppConfig;
+
+$logoUrl = AppConfig::get('logo_url');
+```
+
+### Default Configuration Values
+
+After running `php artisan migrate --seed`, these configurations are automatically created:
+
+| Key | Default Value | Type |
+|-----|---------------|------|
+| logo_url | https://via.placeholder.com/200x50?text=MaLah | string |
+| logo_text | MaLah | string |
+| logo_height | 32px | string |
+| primary_color | #9333ea | string |
+| secondary_color | #ec4899 | string |
+| contact_email | info@malah.com | string |
+| contact_phone | +62 812-3456-7890 | string |
+| contact_address | Jakarta, Indonesia | string |
+| social_facebook | https://facebook.com | string |
+| social_instagram | https://instagram.com | string |
+| social_twitter | https://twitter.com | string |
+| app_name | MaLah - Digital Wedding Invitation | string |
+| app_description | Platform terpercaya untuk membuat undangan digital... | string |
+
+### Updating Configuration
+
+**Via SQL**:
+```sql
+UPDATE app_config SET value = 'https://example.com/logo.png' WHERE key = 'logo_url';
+```
+
+**Via Laravel Tinker**:
+```bash
+php artisan tinker
+>>> App\Models\AppConfig::where('key', 'logo_url')->update(['value' => 'https://example.com/logo.png']);
+```
+
+**Via ConfigService**:
+```php
+ConfigService::set('logo_url', 'https://example.com/logo.png', 'string', 'Application logo');
+```
 
 ## Key Features Implemented
 
@@ -305,6 +409,37 @@ After running seeders, you can login with:
 **Password:** `Test@12345`
 
 ⚠️ **Important**: Change these credentials in production!
+
+## Testing the Application
+
+For comprehensive testing instructions including:
+- Landing page testing
+- User registration and login
+- Admin login and functionality
+- Template management
+- Payment testing
+- Responsive design testing
+- Browser compatibility testing
+
+See **[TESTING.md](./TESTING.md)** for detailed testing guide.
+
+### Quick Test
+
+```bash
+# 1. Start development server
+npm run dev
+
+# 2. Visit landing page
+# http://localhost:8000
+
+# 3. Test user login
+# Email: test@example.com
+# Password: password
+
+# 4. Test admin login
+# Email: admin@example.com
+# Password: admin123
+```
 
 ## Subdomain Setup (Local Development)
 

@@ -83,23 +83,40 @@ npm run dev
 
 Visit `http://localhost:8000` 🎉
 
-## 📝 Default Credentials
+## 📝 Default Test Credentials
 
-After running seeders, use these accounts:
+After running `php artisan migrate --seed`, use these accounts for testing:
 
-**Admin Account**
-- Email/Username: `admin`
-- Password: `Admin@12345`
+### Admin Accounts
+- **Admin Account**
+  - Email: `admin@malahproject.com`
+  - Username: `admin`
+  - Password: `Admin@12345`
 
-**Test Admin**
-- Email/Username: `testadmin`  
-- Password: `Test@12345`
+- **Test Admin**
+  - Email: `test@malahproject.com`
+  - Username: `testadmin`
+  - Password: `Test@12345`
 
-⚠️ Change these in production!
+### User Accounts
+- **John Doe** (Regular User)
+  - Email: `user@malahproject.com`
+  - Username: `johndoe`
+  - Password: `User@12345`
+
+- **Jane Smith** (Regular User)
+  - Email: `jane@malahproject.com`
+  - Username: `janesmith`
+  - Password: `User@12345`
+
+**Note:** You can also login with phone number `081234567890` (John) or `082234567891` (Jane)
+
+⚠️ **Important**: Change all credentials in production!
 
 ## 📚 Documentation
 
 - **[SETUP.md](./SETUP.md)** - Detailed installation and configuration guide
+- **[TESTING.md](./TESTING.md)** - Comprehensive testing guide (landing page, auth, admin, payments)
 - **[MYSQL_SETUP.md](./MYSQL_SETUP.md)** - Complete MySQL setup instructions
 - **[API Routes](#api-endpoints)** - API endpoint documentation
 
@@ -188,6 +205,33 @@ All pages are fully responsive:
 - Mobile (320px+)
 - Tablet (768px+)
 - Desktop (1024px+)
+
+## ⚙️ Configuration Management
+
+The application uses a database-driven configuration system that allows dynamic settings without redeployment.
+
+### AppConfig Features
+- Logo and branding settings
+- Color customization
+- Contact information
+- Social media links
+- Application settings
+
+### Update Configuration
+
+**SQL Update:**
+```sql
+UPDATE app_config SET value = 'Your Logo URL' WHERE key = 'logo_url';
+```
+
+**PHP Code:**
+```php
+use App\Services\ConfigService;
+ConfigService::set('logo_url', 'https://example.com/logo.png');
+ConfigService::get('logo_url'); // Get value
+```
+
+For detailed configuration management, see [SETUP.md](./SETUP.md#database-configuration-system)
 
 ## 🌐 Subdomain Management
 

@@ -6,6 +6,8 @@
 
         <title inertia>{{ config('app.name', 'MaLah') }}</title>
 
+        @viteReactRefresh
+        
         @vite(['resources/css/app.css', 'resources/js/app.jsx'])
         @inertiaHead
     </head>

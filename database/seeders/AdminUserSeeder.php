@@ -19,7 +19,7 @@ class AdminUserSeeder extends Seeder
             'name' => 'Admin MaLah',
             'email' => 'admin@malahproject.com',
             'username' => 'admin',
-            'phone' => '081234567890',
+            'phone' => '081234567892',
             'password' => Hash::make('Admin@12345'),
             'user_type' => 'admin',
         ]);
@@ -29,7 +29,7 @@ class AdminUserSeeder extends Seeder
             'name' => 'Test Admin',
             'email' => 'test@malahproject.com',
             'username' => 'testadmin',
-            'phone' => '082234567890',
+            'phone' => '082234567893',
             'password' => Hash::make('Test@12345'),
             'user_type' => 'admin',
         ]);

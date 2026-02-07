@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class InvitationData extends Model
 {
+    protected $table = 'invitation_data';
+
     protected $fillable = [
         'subscription_id',
         'bride_name',
@@ -27,7 +29,7 @@ class InvitationData extends Model
 
     protected $casts = [
         'event_date' => 'date',
-        'ceremony_time' => 'datetime',
+        'ceremony_time' => 'string',
         'photo_gallery' => 'json',
         'wedding_info' => 'json',
     ];
