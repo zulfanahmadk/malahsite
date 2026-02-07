@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { useForm, Link } from '@inertiajs/react'
 
 export default function Register() {

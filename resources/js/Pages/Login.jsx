@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { useForm, usePage } from '@inertiajs/react'
 import { Link } from '@inertiajs/react'
 

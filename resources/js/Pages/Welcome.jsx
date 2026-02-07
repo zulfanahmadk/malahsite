@@ -1,31 +1,20 @@
-import { useState, useEffect } from 'react'
-import { Link } from '@inertiajs/react'
+import React, { useState, useEffect } from 'react'
+import { Link, usePage } from '@inertiajs/react'
 
 export default function Welcome() {
-  const [templates, setTemplates] = useState([])
+  const { templates: initialTemplates = [] } = usePage().props
   const [selectedCategory, setSelectedCategory] = useState(null)
-  const [filteredTemplates, setFilteredTemplates] = useState([])
-
-  useEffect(() => {
-    // Fetch templates from API
-    fetch('/api/templates')
-      .then(res => res.json())
-      .then(data => {
-        setTemplates(data.templates || [])
-        setFilteredTemplates(data.templates || [])
-      })
-      .catch(err => console.error('Failed to fetch templates:', err))
-  }, [])
+  const [filteredTemplates, setFilteredTemplates] = useState(initialTemplates)
 
   useEffect(() => {
     if (selectedCategory) {
       setFilteredTemplates(
-        templates.filter(t => t.category === selectedCategory)
+        initialTemplates.filter(t => t.category === selectedCategory)
       )
     } else {
-      setFilteredTemplates(templates)
+      setFilteredTemplates(initialTemplates)
     }
-  }, [selectedCategory, templates])
+  }, [selectedCategory, initialTemplates])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50">

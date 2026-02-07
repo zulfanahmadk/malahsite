@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Template;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 
@@ -9,7 +10,9 @@ class PageController extends Controller
 {
     public function welcome()
     {
-        return Inertia::render('Welcome');
+        return Inertia::render('Welcome', [
+            'templates' => [],
+        ]);
     }
 
     public function login()
