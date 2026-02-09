@@ -1,32 +1,9 @@
-import React, { useEffect, useState } from 'react'
-import { Link } from '@inertiajs/react'
+import React from 'react'
+import { Link, usePage } from '@inertiajs/react'
 
 export default function Dashboard() {
-  const [subscriptions, setSubscriptions] = useState([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    const token = localStorage.getItem('auth_token')
-    fetch('/api/subscriptions', {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Accept': 'application/json',
-      },
-    })
-      .then(res => res.json())
-      .then(data => {
-        setSubscriptions(data)
-        setLoading(false)
-      })
-      .catch(err => {
-        console.error('Failed to fetch subscriptions:', err)
-        setLoading(false)
-      })
-  }, [])
-
-  if (loading) {
-    return <div className="text-center py-12">Loading...</div>
-  }
+  // Ambil data subscriptions langsung dari props yang dikirim Controller
+  const { subscriptions } = usePage().props;
 
   return (
     <div className="min-h-screen bg-gray-50 pt-20">
@@ -41,7 +18,7 @@ export default function Dashboard() {
           </Link>
         </div>
 
-        {subscriptions.length === 0 ? (
+        {!subscriptions || subscriptions.length === 0 ? (
           <div className="bg-white rounded-lg shadow p-8 text-center">
             <p className="text-gray-600 mb-4">Anda belum membuat undangan digital</p>
             <Link
@@ -63,7 +40,7 @@ export default function Dashboard() {
                   <div className="mb-4">
                     <p className="text-sm text-gray-600">Subdomain</p>
                     <p className="text-lg font-mono font-bold text-purple-600">
-                      {sub.subdomain}.malahproject.com
+                      {sub.subdomain}.malahproject.test
                     </p>
                   </div>
                   <div className="mb-4">
@@ -86,7 +63,7 @@ export default function Dashboard() {
                     </Link>
                     {sub.status === 'active' && (
                       <a
-                        href={`https://${sub.subdomain}.malahproject.local`}
+                        href={`http://${sub.subdomain}.malahproject.test:8000`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex-1 text-center border border-purple-600 text-purple-600 py-2 rounded hover:bg-purple-50 transition font-medium"

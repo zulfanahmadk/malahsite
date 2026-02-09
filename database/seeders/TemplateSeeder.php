@@ -23,6 +23,7 @@ class TemplateSeeder extends Seeder
                 'type' => 'wedding',
                 'category' => 'Floral',
                 'demo_url' => 'https://demo.malahproject.com/elegant-floral',
+                'is_active' => true,
             ],
             [
                 'name' => 'Modern Minimalist',
@@ -33,6 +34,7 @@ class TemplateSeeder extends Seeder
                 'type' => 'wedding',
                 'category' => 'Minimalis',
                 'demo_url' => 'https://demo.malahproject.com/modern-minimalist',
+                'is_active' => true,
             ],
             [
                 'name' => 'Tradisional Adat',
@@ -43,6 +45,7 @@ class TemplateSeeder extends Seeder
                 'type' => 'wedding',
                 'category' => 'Adat',
                 'demo_url' => 'https://demo.malahproject.com/tradisional-adat',
+                'is_active' => true,
             ],
             [
                 'name' => 'Luxury Gold',
@@ -53,6 +56,7 @@ class TemplateSeeder extends Seeder
                 'type' => 'wedding',
                 'category' => 'Luxury',
                 'demo_url' => 'https://demo.malahproject.com/luxury-gold',
+                'is_active' => true,
             ],
             [
                 'name' => 'Romantic Rose',
@@ -63,6 +67,7 @@ class TemplateSeeder extends Seeder
                 'type' => 'wedding',
                 'category' => 'Floral',
                 'demo_url' => 'https://demo.malahproject.com/romantic-rose',
+                'is_active' => true,
             ],
         ];
 

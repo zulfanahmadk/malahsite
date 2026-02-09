@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react'
 import { Link, usePage } from '@inertiajs/react'
 
 export default function Welcome() {
-  const { templates: initialTemplates = [], branding } = usePage().props
+  const props = usePage().props
+  const initialTemplates = Array.isArray(props.templates) ? props.templates : []
+  const branding = props.branding || {}
   const [selectedCategory, setSelectedCategory] = useState(null)
   const [filteredTemplates, setFilteredTemplates] = useState(initialTemplates)
   const [expandedFaqId, setExpandedFaqId] = useState(null)
@@ -121,7 +123,7 @@ export default function Welcome() {
                     </p>
                     <div className="flex items-center justify-between mb-4">
                       <span className="text-2xl font-bold text-purple-600">
-                        Rp {template.price.toLocaleString('id-ID')}
+                        Rp {Number(template.price || 0).toLocaleString('id-ID')}
                       </span>
                       {template.category && (
                         <span className="text-sm bg-purple-100 text-purple-700 px-3 py-1 rounded-full">

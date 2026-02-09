@@ -18,9 +18,9 @@ class AppConfigSeeder extends Seeder
         $configs = [
             [
                 'key' => 'logo_url',
-                'value' => 'https://via.placeholder.com/200x50?text=MaLah',
+                'value' => '',
                 'type' => 'string',
-                'description' => 'Application logo URL',
+                'description' => 'Application logo URL (empty = use text fallback)',
             ],
             [
                 'key' => 'logo_text',

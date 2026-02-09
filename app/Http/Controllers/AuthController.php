@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -24,25 +26,40 @@ class AuthController extends Controller
 
         if (!$user || !Hash::check($validated['password'], $user->password)) {
             throw ValidationException::withMessages([
-                'identifier' => ['The provided credentials are invalid.'],
+                'identifier' => ['Kredensial yang Anda berikan tidak cocok dengan data kami.'],
             ]);
         }
 
-        // Check if user is admin trying to login
-        if ($request->wantsJson() && $request->header('X-Admin-Login')) {
+        // Logic check untuk Admin Login (Jika request datang dari form admin)
+        if ($request->header('X-Admin-Login') || $request->is('admin/*')) {
             if (!$user->isAdmin()) {
                 throw ValidationException::withMessages([
-                    'identifier' => ['You do not have admin access.'],
+                    'identifier' => ['Anda tidak memiliki akses administrator.'],
                 ]);
             }
         }
 
+        // PENTING: Lakukan login secara Stateful (Session)
+        Auth::login($user, $request->boolean('remember'));
+
+        // PENTING: Regenerate session ID untuk keamanan (Cegah Session Fixation)
+        $request->session()->regenerate();
+
+        // Tetap buat token untuk fallback API jika dibutuhkan di frontend
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json([
-            'user' => $user,
-            'token' => $token,
-        ]);
+        // Jika request dari Inertia, biasanya akan otomatis redirect. 
+        // Jika dari manual axios, kita beri json response.
+        if ($request->wantsJson()) {
+            return response()->json([
+                'user' => $user,
+                'token' => $token,
+                'message' => 'Login berhasil',
+                'redirect' => $user->isAdmin() ? route('admin.dashboard') : route('dashboard')
+            ]);
+        }
+
+        return redirect()->intended($user->isAdmin() ? '/admin/dashboard' : '/dashboard');
     }
 
     /**
@@ -67,12 +84,20 @@ class AuthController extends Controller
             'user_type' => 'user',
         ]);
 
+        // Langsung login-kan user setelah register
+        Auth::login($user);
+        $request->session()->regenerate();
+
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json([
-            'user' => $user,
-            'token' => $token,
-        ], 201);
+        if ($request->wantsJson()) {
+            return response()->json([
+                'user' => $user,
+                'token' => $token,
+            ], 201);
+        }
+
+        return redirect('/dashboard');
     }
 
     /**
@@ -80,11 +105,27 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        // 1. Hapus Token Sanctum (jika ada)
+        if ($request->user()) {
+            $request->user()->tokens()->delete();
+        }
 
-        return response()->json([
-            'message' => 'Successfully logged out',
-        ]);
+        // 2. Logout Session Web
+        Auth::logout();
+
+        // 3. Hancurkan Session
+        $request->session()->invalidate();
+
+        // 4. Generate token CSRF baru
+        $request->session()->regenerateToken();
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => 'Successfully logged out',
+            ]);
+        }
+
+        return redirect('/login');
     }
 
     /**

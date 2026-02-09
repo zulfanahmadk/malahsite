@@ -80,6 +80,7 @@ class SubscriptionController extends Controller
 
     /**
      * Check subdomain availability
+     * Note: Always returns "available" message for security (tidak membuka info subdomain mana yang terpakai)
      */
     public function checkSubdomain(Request $request)
     {
@@ -93,16 +94,17 @@ class SubscriptionController extends Controller
         if (preg_match('/[\s!@#$%^&*()+=\[\]{};:\'",.<>?\\\|`~]/', $subdomain)) {
             return response()->json([
                 'available' => false,
-                'message' => 'Subdomain contains invalid characters',
+                'message' => 'Subdomain tersedia',
             ]);
         }
 
         // Check if subdomain is already taken
         $exists = Subscription::where('subdomain', $subdomain)->exists();
 
+        // Always return same message regardless of availability for security
         return response()->json([
             'available' => !$exists,
-            'message' => $exists ? 'Subdomain is already taken' : 'Subdomain is available',
+            'message' => 'Subdomain tersedia',
         ]);
     }
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link } from '@inertiajs/react'
+import { Link, router } from '@inertiajs/react'
 
 export default function AdminLogin() {
   const [error, setError] = useState('')
@@ -9,43 +9,34 @@ export default function AdminLogin() {
     password: '',
   })
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault()
     setError('')
     setLoading(true)
 
-    try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'X-Admin-Login': 'true',
-        },
-        body: JSON.stringify(data),
-      })
-
-      const result = await response.json()
-
-      if (!response.ok) {
-        setError(result.message || 'Login failed')
+    // Gunakan router.post dari Inertia (Bukan fetch manual)
+    // Ini otomatis menangani CSRF dan Session Laravel
+    router.post('/login', {
+      ...data,
+      remember: true // Opsional: agar session tidak cepat habis
+    }, {
+      // Header khusus untuk memberi tahu Controller bahwa ini login admin
+      headers: {
+        'X-Admin-Login': 'true',
+      },
+      onSuccess: () => {
+        // Jika login berhasil, Laravel akan otomatis redirect ke dashboard admin
+        // karena kita sudah set logic redirect di AuthController
+      },
+      onError: (errors) => {
         setLoading(false)
-        return
-      }
-
-      // Check if user is admin
-      if (result.user.user_type !== 'admin') {
-        setError('You do not have admin access')
+        // Mengambil pesan error dari validasi Laravel
+        setError(errors.identifier || 'Login failed. Please check your credentials.')
+      },
+      onFinish: () => {
         setLoading(false)
-        return
       }
-
-      localStorage.setItem('auth_token', result.token)
-      window.location.href = '/admin/dashboard'
-    } catch (err) {
-      setError('An error occurred. Please try again.')
-      setLoading(false)
-    }
+    })
   }
 
   return (
@@ -55,7 +46,7 @@ export default function AdminLogin() {
         <p className="text-center text-gray-600 mb-8">Masuk dengan email atau username</p>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded text-sm">
             {error}
           </div>
         )}

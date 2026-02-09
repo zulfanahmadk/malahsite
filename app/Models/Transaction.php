@@ -10,6 +10,7 @@ class Transaction extends Model
     protected $fillable = [
         'subscription_id',
         'midtrans_order_id',
+        'snap_token',
         'amount',
         'status',
         'payload',

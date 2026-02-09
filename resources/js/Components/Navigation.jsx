@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link, usePage } from '@inertiajs/react'
+import { Link, usePage, router } from '@inertiajs/react'
 
 export default function Navigation({ user }) {
   const { branding } = usePage().props
@@ -8,6 +8,10 @@ export default function Navigation({ user }) {
   const scrollToSection = (id) => {
     const element = document.getElementById(id)
     element?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  const handleLogout = () => {
+    router.post('/logout')
   }
 
   return (
@@ -32,12 +36,12 @@ export default function Navigation({ user }) {
 
           {/* Nav Items - Center */}
           <div className="flex items-center gap-8 flex-1 justify-center">
-            <button
+            <Link
               href="/"
               className="text-gray-700 hover:text-purple-600 transition"
             >
               Home
-            </button>
+            </Link>
             <button
               onClick={() => scrollToSection('faq')}
               className="text-gray-700 hover:text-purple-600 transition"
@@ -59,11 +63,12 @@ export default function Navigation({ user }) {
                 <Link href="/dashboard" className="text-gray-700 hover:text-purple-600">
                   Dashboard
                 </Link>
-                <form method="post" action="/api/auth/logout" className="inline">
-                  <button type="submit" className="text-gray-700 hover:text-purple-600">
-                    Logout
-                  </button>
-                </form>
+                <button
+                  onClick={handleLogout}
+                  className="text-gray-700 hover:text-purple-600"
+                >
+                  Logout
+                </button>
               </>
             ) : (
               <>

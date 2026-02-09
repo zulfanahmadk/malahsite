@@ -16,11 +16,62 @@ class HandleInertiaRequests extends Middleware
     protected $rootView = 'app';
 
     /**
+     * Determine if request should bypass Inertia completely
+     */
+    public function shouldBypassInertia(Request $request): bool
+    {
+        $path = $request->getPathInfo();
+
+        // Skip for API endpoints and JSON API calls
+        if (strpos($path, '/api/') === 0) {
+            return true;
+        }
+
+        // Skip for payment endpoints
+        if (strpos($path, '/payment/charge') === 0 || strpos($path, '/payment/debug') === 0) {
+            return true;
+        }
+
+        // Skip for invitation update endpoint (JSON endpoint)
+        if (strpos($path, '/invitation') !== false &&
+            ($request->isMethod('PUT') || $request->isMethod('POST'))) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Handle the request
+     */
+    public function handle($request, $next)
+    {
+        // Bypass Inertia middleware entirely for JSON endpoints
+        if ($this->shouldBypassInertia($request)) {
+            return $next($request);
+        }
+
+        // Otherwise use Inertia's middleware
+        return parent::handle($request, $next);
+    }
+
+    /**
      * Determine the current asset version.
      */
     public function version(Request $request): ?string
     {
         return parent::version($request);
+    }
+
+    /**
+     * Skip Inertia processing for API endpoints and JSON endpoints
+     */
+    public function shouldSkipSharing(Request $request): bool
+    {
+        $path = $request->getPathInfo();
+        return strpos($path, '/api/') === 0 ||
+               strpos($path, '/payment/charge') === 0 ||
+               strpos($path, '/payment/debug') === 0;
     }
 
     /**

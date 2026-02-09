@@ -1,50 +1,32 @@
 import React, { useState } from 'react'
-import { useForm, usePage } from '@inertiajs/react'
-import { Link } from '@inertiajs/react'
+import { useForm, Link } from '@inertiajs/react'
 
 export default function Login() {
   const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-  const { data, setData, post } = useForm({
+  const { data, setData, post, processing } = useForm({
     identifier: '',
     password: '',
   })
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault()
     setError('')
-    setLoading(true)
 
-    try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify(data),
-      })
-
-      const result = await response.json()
-
-      if (!response.ok) {
-        setError(result.message || 'Login failed')
-        setLoading(false)
-        return
-      }
-
-      // Store token and redirect based on user type
-      localStorage.setItem('auth_token', result.token)
-
-      if (result.user.user_type === 'admin') {
-        window.location.href = '/admin/dashboard'
-      } else {
-        window.location.href = '/dashboard'
-      }
-    } catch (err) {
-      setError('An error occurred. Please try again.')
-      setLoading(false)
-    }
+    // Gunakan fungsi 'post' bawaan useForm Inertia
+    // Targetnya adalah '/login' (bukan /api/auth/login)
+    post('/login', {
+      onSuccess: () => {
+        // Inertia otomatis menangani redirect berdasarkan logic di AuthController
+      },
+      onError: (errors) => {
+        // Mengambil error validasi dari Laravel
+        if (errors.identifier) {
+          setError(errors.identifier)
+        } else {
+          setError('Login gagal. Silakan periksa kembali data Anda.')
+        }
+      },
+    })
   }
 
   return (
@@ -56,7 +38,7 @@ export default function Login() {
         </p>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded text-sm text-center">
             {error}
           </div>
         )}
@@ -92,10 +74,10 @@ export default function Login() {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={processing}
             className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-2 rounded-lg font-semibold hover:shadow-lg transition disabled:opacity-50"
           >
-            {loading ? 'Sedang Masuk...' : 'Masuk'}
+            {processing ? 'Sedang Masuk...' : 'Masuk'}
           </button>
         </form>
 

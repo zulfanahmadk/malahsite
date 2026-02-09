@@ -18,12 +18,16 @@ export default defineConfig({
     },
     server: {
         middlewareMode: false,
+        port: 5173,
+        strictPort: false,
+        host: '0.0.0.0',
         watch: {
             ignored: ['**/storage/framework/views/**'],
         },
         hmr: {
-            host: 'localhost',
+            host: process.env.VITE_HMR_HOST || 'localhost',
             port: 5173,
+            protocol: 'ws',
         },
     },
 });
